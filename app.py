@@ -1,7 +1,6 @@
 # Shopify Data Engineering Challenge - Mokai (Monica) Xu
 
 import json
-from pprint import pprint
 
 
 def get_file(file):
@@ -11,7 +10,8 @@ def get_file(file):
 
 
 def inner_join(sorted1, sorted2, key1, key2):
-    """Return inner join of two JSON Arrays sorted by respective key, given that sorted_1 key1 are all unique"""
+    """Return inner join of two JSON Arrays sorted by 
+       respective key, given that sorted_1 key1 are all unique"""
     p1 = 0
     p2 = 0
     result = []
@@ -32,7 +32,8 @@ def inner_join(sorted1, sorted2, key1, key2):
 
 
 def calc_total(records, names):
-    """Return total price paid by customers with names indicated in names array """
+    """Return total price paid by customers with names indicated 
+       in names array """
     total = 0
     for rec in records:
         if rec['name'] in names:
@@ -47,8 +48,9 @@ def main(file1, file2, key1, key2):
     data2.sort(key=lambda x: x[key2])
 
     result = inner_join(data1, data2, key1, key2)
-    pprint(calc_total(result, ['Barry', 'Steve']))  # The total is 19.5
-    pprint(len(result))  # The length is 6
+    # The total is 19.5
+    print("Order Total: $" + str(calc_total(result, ['Barry', 'Steve'])))
+    print("Length of Resulting Array: " + str(len(result)))  # The length is 6
     return result
 
 
