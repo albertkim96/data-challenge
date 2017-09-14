@@ -1,80 +1,60 @@
+# Shopify Data Engineering Challenge - Mokai (Monica) Xu
+
 import json
-from jsonmerge import merge, Merger
-from pprint import pprint
 
 
-with open('data/orders.json') as data_file:    
-    orders = json.load(data_file)
-
-with open('data/customers.json') as data_file:
-    customers = json.load(data_file)
-
+def get_file(file):
+    """Returns JSON file as Python dictionary"""
+    with open(file) as data_file:
+        return json.load(data_file)
 
 
-###
-schema = {
-    "properties": {
-        "bar": {
-            "mergeStrategy": "append"
-        }
-    }
-}
+def inner_join(sorted1, sorted2, key1, key2):
+    """Return inner join of two JSON Arrays sorted by 
+       respective key, given that sorted1 key1 and
+       sorted2 key2 are all unique"""
+    p1 = 0
+    p2 = 0
+    result = []
 
-merger = Merger(schema)
-'''
-# convert both to dictionaries where the key is "cid and  "customer_id"
-## helper function that will output array of key-value fields where cid is not one of them
-
-# for each customer in customers
-# if customer[cid] exists in orders DICTIONARY
-# add get(customer[cid]) orderObject and add it to the json u are on
-order_dict = {}
-for order in orders:
-    order_dict[order['customer_id']] = order
-
-for customer in customers:
-    if customer['cid'] in order_dict:
-        result = merger.merge(customer, order_dict.get(customer['cid']))
-        print(result)
+    while (p1 < len(sorted1) and p2 < len(sorted2)):
+        # if entries
+        if sorted1[p1][key1] == sorted2[p2][key2]:
+            entry = {}
+            entry.update(sorted1[p1])
+            entry.update(sorted2[p2])
+            result.append(entry)
+            p2 += 1
+        elif sorted1[p1][key1] < sorted2[p2][key2]:
+            p1 += 1
+        elif sorted1[p1][key1] > sorted2[p2][key2]:
+            p2 += 1
+    return result
 
 
-customer_dict = {}
-for customer in customers:
-    customer_dict[customer['cid']] = customer
-    
-arr = []
+def calc_total(records, names):
+    """Return total price paid by customers with names indicated 
+       in names array """
+    total = 0
+    for rec in records:
+        if rec['name'] in names:
+            total += rec['price']
+    return total
 
-for order in orders:
-    if order['customer_id'] in customer_dict:
-        result = merger.merge(order, customer_dict.get(order['customer_id']))
-        arr.append(result)
-
-print(arr)'''
-
-#Build a simple joiner that accepts two files each containing an array of json objects. The user can specify any key that is shared in both files to join on. 
 
 def main(file1, file2, key1, key2):
-    with open(file1) as data_file:    
-        dict1 = json.load(data_file)
+    data1 = get_file(file1)
+    data2 = get_file(file2)
+    data1.sort(key=lambda x: x[key1])
+    data2.sort(key=lambda x: x[key2])
 
-    with open(file2) as data_file:
-        dict2 = json.load(data_file)
+    result = inner_join(data1, data2, key1, key2)
     
-    new_dict = {}
-    for i in range(len(dict1)):
-        new_dict[dict1[i][key1]] = dict1[i]
+    print("Order Total: $" + str(calc_total(result, ['Barry', 'Steve']))) # The total is 19.5
+    print("Length of Resulting Array: " + str(len(result)))  # The length is 6
     
-    res = []
-    for i in range(len(dict2)):
-        if dict2[i][key2] in new_dict:
-            dict2[i].update(new_dict.get(dict2[i][key2]))
-            res.append(dict2[i])
-
-    print(res)
+    return result
 
 
-        
-main('data/orders.json', 'data/customers.json', 'customer_id', 'cid')
-        
-
-        
+if __name__ == "__main__":
+    main('data/customers.json', 'data/orders.json', 'cid', 'customer_id')

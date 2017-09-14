@@ -2,8 +2,8 @@
 Shopify Winternship 2018 Data Challenge
 
 
-Output:
+Output for Inner Join in O(nlogn):
 ```
-Order Total: 19.5
-Resulting Array Length: 6
+Order Total: $19.5
+Length of Resulting Array: 6
 ```
