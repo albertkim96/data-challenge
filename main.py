@@ -50,7 +50,7 @@ def main(file1, file2, key1, key2):
 
     result = inner_join(data1, data2, key1, key2)
     
-    print("Order Total: $" + str(calc_total(result, ['Barry', 'Steve']))) # The total is 19.5
+    print("Order Total: $%.2f" % calc_total(result, ['Barry', 'Steve'])) # The total is 19.5
     print("Length of Resulting Array: " + str(len(result)))  # The length is 6
     
     return result
